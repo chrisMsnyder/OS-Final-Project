@@ -62,13 +62,17 @@ class Customer(object):
                     response = self.Storefront.browse()
                     [print(x) for x in response]
                 if text[0] == 'buy':
-                    response = self.Storefront.buy_item(text[1])
+                    response = self.Storefront.buy_item(text[1], username, password)
+                    print(response)
+                # This is a tester function for testing the semaphore. The remote function is idential to buy_item() except it also includes a sleep() function
+                if text[0] == 'buy_sleep':
+                    response = self.Storefront.buy_item_sleep(text[1], username, password)
                     print(response)
                 if text[0] == 'exit':
                     print('Goodbye!')
                     self.Storefront.exit_customer(username, password)
                     break
-        except (KeyboardInterrupt, EOFError):
+        finally:
             self.Storefront.exit_customer(username, password)
 
 if __name__ == '__main__':
