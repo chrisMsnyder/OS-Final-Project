@@ -8,7 +8,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-u', dest='username', action='store')
     parser.add_argument('-p', dest='password', action='store')
-    parser.add_argument('-shopped', dest='shopped', action='store', default='y')
+    parser.add_argument('-shopped', dest='shopped', action='store', default='n')
     
     args = parser.parse_args()
     return args
@@ -28,12 +28,13 @@ class Customer(object):
             username = ''
             password = ''
 
-            if args.username and args.password:
+            if self.args.username and self.args.password:
                 user_pass_preset = True
             while (text.lower() != 'y' and text.lower() != 'n' and not can_enter):
                 if not user_pass_preset:
                     text = input('Have you shopped with us before? (y/n)')
                     text = text.lower()
+                    self.args.shopped = text
                     if text == 'n':
                         print('Please create an account')
                     elif text == 'y':
@@ -45,11 +46,11 @@ class Customer(object):
                         username = input('Username: ')
                         password = input('Password: ')
                     else:
-                        username = args.username
-                        password = args.password
+                        username = self.args.username
+                        password = self.args.password
                     is_exists = self.Storefront.check_account_exists(username, password)
                     is_shopping = self.Storefront.check_if_current_shopper(username, password)
-                    if text == 'y' or args.shopped.lower() == 'y':
+                    if text == 'y' or self.args.shopped.lower() == 'y':
                         if not is_exists:
                             print(f"Sorry, no account exists with Username: '{username}' and Password: '{password}'.\n")
                         else:
@@ -58,7 +59,7 @@ class Customer(object):
                                 can_enter = True
                             else:
                                 print('We are sorry, someone already appears to be logged on with that account. Please try another account.')
-                    elif text == 'n' or args.shopped.lower() == 'n':
+                    elif text == 'n' or self.args.shopped.lower() == 'n':
                         if is_exists:
                             if is_shopping:
                                 print('We are sorry, someone already appears to be logged on with that account. Please try another account.')
