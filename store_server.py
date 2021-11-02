@@ -1,15 +1,10 @@
-from datetime import datetime
-from platform import release
-from socket import socket
 import Pyro4
 import Pyro4.core
 import os
 import threading
 import time
+import pandas as pd
 
-from Pyro5.client import Proxy
-
-items_for_sale = ['bicycle', 'lamp', 'tv', 'tv']
 account_dict = {'admin,admin':{}}
 current_customers = []
 item_dict = {}
@@ -94,13 +89,17 @@ class Naming_Server(threading.Thread):
 #######################
 
 class Item():
-    def __init__(self, item_name):
+    def __init__(self, item_name, quantity, price):
         self.sem = 1
         self.item_name = item_name
-        self.number_in_stock = 1
+        self.number_in_stock = int(quantity)
+        self.price = float(price)
 
     def get_item_name(self):
         return self.item_name
+
+    def get_price(self):
+        return self.price
 
     def get_number_in_stock(self):
         return self.number_in_stock
@@ -108,8 +107,8 @@ class Item():
     def reduce_number_in_stock(self):
         self.number_in_stock -= 1
 
-    def increase_number_in_stock(self):
-        self.number_in_stock += 1
+    def increase_number_in_stock(self, quantity=1):
+        self.number_in_stock += quantity
 
     def wait(self):
         while(True):
@@ -124,17 +123,26 @@ class Item():
 #######################
 
 def stock_inventory():
-    for item in items_for_sale:
-        if item not in item_dict:
-            item_dict[item] = Item(item)
-        else:
-            item_dict[item].increase_number_in_stock()
+    with open('items.txt', 'r') as file:
+        for item in file.readlines():
+            item = item.strip()
+            item_split = item.split(',')
+            if len(item_split) != 3:
+                print(f'Item not in correct format in file: {item}. Skipping...')
+                continue
+            name = item_split[0]
+            quantity = int(item_split[1])
+            price = float(item_split[2])
+            if name not in item_dict:
+                item_dict[name] = Item(name, quantity, price)
+            else:
+                item_dict[name].increase_number_in_stock(quantity)
 
 def get_initial_inventory():
-        inventory = ''
-        for it in item_dict.keys():
-            inventory = inventory + it + ": " + str(item_dict[it].get_number_in_stock()) + '\n'
-        return inventory
+    inventory = ''
+    for it in item_dict.keys():
+        inventory = inventory + it + ": " + str(item_dict[it].get_number_in_stock()) + '\n'
+    return inventory
 
 
 def start_server():

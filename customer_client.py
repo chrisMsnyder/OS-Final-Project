@@ -9,6 +9,7 @@ def parse_args():
     parser.add_argument('-u', dest='username', action='store')
     parser.add_argument('-p', dest='password', action='store')
     parser.add_argument('-shopped', dest='shopped', action='store', default='n')
+    parser.add_argument('-server', dest='server', action='store')
     
     args = parser.parse_args()
     return args
@@ -16,8 +17,11 @@ def parse_args():
 
 class Customer(object):
     def __init__(self, args):
-        self.Storefront = Pyro4.Proxy(f"PYRONAME:store.server")
         self.args = args
+        if not self.args.server:
+            self.Storefront = Pyro4.Proxy(f"PYRONAME:store.server")
+        else:
+            self.Storefront = Pyro4.Proxy(self.args.server)
 
     def start_shopping(self):
         try:
