@@ -240,6 +240,10 @@ def stock_inventory():
                 item_dict[name] = Item(name, quantity, price)
             else:
                 item_dict[name].increase_number_in_stock(quantity)
+    print(f'\nOpen For Business!')
+    print(f"Customer Accounts: {[x for x in account_dict.keys()]}")
+    print(f"Inventory: ")
+    print(get_initial_inventory(),'\n')
 
 
 def get_initial_inventory():
@@ -254,10 +258,7 @@ def start_server():
     ns = Pyro4.locateNS()
     uri = daemon.register(Store)
     ns.register('store.server', str(uri))
-    print(f'\nOpen For Business!')
-    print(f"Customer Accounts: {[x for x in account_dict.keys()]}")
-    print(f"Inventory: ")
-    print(get_initial_inventory(),'\n')
+    stock_inventory()
     daemon.requestLoop()
 
 
@@ -266,7 +267,6 @@ if __name__ == '__main__':
         print("Starting up server...")
         thread = Naming_Server()
         thread.start()
-        stock_inventory()
         start_server()
     except (KeyboardInterrupt, EOFError):
         print("Sorry We're Closed!")
