@@ -24,13 +24,13 @@ class Customer(object):
             self.Storefront = Pyro4.Proxy(self.args.server)
 
     def start_shopping(self):
+        username = ''
+        password = ''
         try:
             self.Storefront.ping()
             text = ''
             can_enter = False
             user_pass_preset = False
-            username = ''
-            password = ''
 
             if self.args.username and self.args.password:
                 user_pass_preset = True
@@ -95,6 +95,18 @@ class Customer(object):
                 # This is a tester function for testing the semaphore. It includes a sleep function call to delay the purchase
                 if text[0] == 'buy_sleep':
                     response = self.Storefront.buy_item(text[1], username, password, 10)
+                    print(response)
+                if text[0] == 'cart':
+                    if len(text) > 2 and text[2].isnumeric():
+                        response = self.Storefront.cart_item(text[1], username, password, int(text[2]))
+                    else:
+                        response = self.Storefront.cart_item(text[1], username, password)
+                    print(response)
+                if text[0] == 'view_cart':
+                    response = self.Storefront.view_cart(username, password)
+                    print(response)
+                if text[0] == 'buy_cart':
+                    response = self.Storefront.buy_cart(username, password)
                     print(response)
                 if text[0] == 'exit':
                     print('Goodbye!')
