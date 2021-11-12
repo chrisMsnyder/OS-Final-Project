@@ -6,4 +6,4 @@ Running the Server:
 python store_server.py
 
 Running the Client:
-python customer_slient.py
+python customer_client.py
