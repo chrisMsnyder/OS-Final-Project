@@ -3,7 +3,7 @@ This is the final project for OS 5523-001
 
 
 Running the Server:
-## python store_server.py
+python store_server.py
 
 Running the Client:
-## python customer_slient.py
+python customer_slient.py
